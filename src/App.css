@@ -1,0 +1,76 @@
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Anton&display=swap");
+
+@theme {
+  --color-principal: #b61f1f;
+  --color-secundario: #ccf02f;
+  --color-gris-claro: #f5f5f5;
+  --color-blanco: #ffffff;
+  --color-gris-oscuro: #333333;
+}
+
+.anton-regular {
+  font-family: "Anton", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  letter-spacing: var(--tracking-widest);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Aumentar el tamaño de las celdas del calendario */
+@media (min-width: 768px) {
+  .custom-calendar .rdp-caption_label {
+    font-size: 1.4rem;
+  }
+
+  .custom-calendar .rdp-root {
+    height: 100%;
+    --rdp-accent-color: #b61f1f;
+    --rdp-selected-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .custom-calendar .rdp-months {
+    width: 100%;
+    max-width: none;
+    height: 95%;
+  }
+
+  .custom-calendar .rdp-month {
+    width: 100%;
+    height: 95%;
+  }
+  .custom-calendar .rdp-month_grid {
+    width: 100%;
+    height: 100%;
+  }
+
+  .custom-calendar .rdp-month_caption {
+    height: 50px;
+  }
+
+  .custom-calendar .rdp-caption_label {
+    font-size: 1.6rem;
+    line-height: 50px;
+  }
+
+  .custom-calendar .rdp-weekday {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--color-principal);
+  }
+
+  .custom-calendar .rdp-day_button {
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 70%;
+    height: 70%;
+    font-size: 1.8rem;
+    font-weight: 400;
+  }
+
+  .custom-calendar .rdp-day_button:hover {
+    background-color: #f0f0f0;
+    transform: translate(2px, -4px);
+    box-shadow: 0 12px 14px rgba(0, 0, 0, 0.1);
+  }
+}
