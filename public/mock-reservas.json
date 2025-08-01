@@ -7,7 +7,7 @@
       "apellido": "Pérez",
       "telefono": "123456789"
     },
-    "fechaHoraInicio": "2025-07-28T12:00:00",
+    "fechaHoraInicio": "2025-08-28T12:30:00",
     "duracionMinutos": 90,
     "estado": "RESERVADA"
   },
@@ -19,7 +19,7 @@
       "apellido": "García",
       "telefono": "987654321"
     },
-    "fechaHoraInicio": "2025-07-28T13:30:00",
+    "fechaHoraInicio": "2025-08-28T14:00:00",
     "duracionMinutos": 90,
     "estado": "RESERVADA"
   },
@@ -31,7 +31,7 @@
       "apellido": "López",
       "telefono": "111222333"
     },
-    "fechaHoraInicio": "2025-07-29T18:00:00",
+    "fechaHoraInicio": "2025-08-29T18:30:00",
     "duracionMinutos": 90,
     "estado": "RESERVADA"
   },
@@ -43,7 +43,7 @@
       "apellido": "Martínez",
       "telefono": "444555666"
     },
-    "fechaHoraInicio": "2025-07-29T21:00:00",
+    "fechaHoraInicio": "2025-08-29T21:30:00",
     "duracionMinutos": 90,
     "estado": "RESERVADA"
   },
@@ -55,7 +55,7 @@
       "apellido": "Sánchez",
       "telefono": "777888999"
     },
-    "fechaHoraInicio": "2025-07-29T15:00:00",
+    "fechaHoraInicio": "2025-08-29T15:30:00",
     "duracionMinutos": 90,
     "estado": "RESERVADA"
   },
@@ -67,7 +67,7 @@
       "apellido": "Romero",
       "telefono": "333444555"
     },
-    "fechaHoraInicio": "2025-07-30T12:00:00",
+    "fechaHoraInicio": "2025-08-30T12:30:00",
     "duracionMinutos": 90,
     "estado": "RESERVADA"
   }

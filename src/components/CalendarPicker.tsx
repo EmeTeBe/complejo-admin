@@ -4,12 +4,12 @@ import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 
 type CalendarPickerProps = {
-  selectedDate: Date[] | undefined;
+  selectedDates: Date[] | undefined;
   onDateSelect: (date: Date[] | undefined) => void;
 };
 
 export const CalendarPicker = ({
-  selectedDate,
+  selectedDates,
   onDateSelect,
 }: CalendarPickerProps) => {
   return (
@@ -23,22 +23,22 @@ export const CalendarPicker = ({
         disabled={{
           before: new Date(),
         }}
-        selected={selectedDate}
+        selected={selectedDates}
         onSelect={onDateSelect}
         navLayout="around"
         locale={es}
         footer={
-          selectedDate && selectedDate.length > 0 ? (
-            <p className="text-sm mt-2 text-gris-oscuro">
-              {selectedDate.length === 1
+          selectedDates && selectedDates.length > 0 ? (
+            <p className="text-md mt-2 text-gris-oscuro">
+              {selectedDates.length === 1
                 ? "Día seleccionado: "
                 : "Días seleccionados: "}
-              {selectedDate
+              {selectedDates
                 .map((date) => date.toLocaleDateString("es-AR"))
                 .join(", ")}
             </p>
           ) : (
-            <p className="text-sm mt-2 text-gris-oscuro">
+            <p className="text-md mt-2 text-gris-oscuro">
               No hay día seleccionado aún
             </p>
           )

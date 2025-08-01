@@ -1,19 +1,17 @@
 import "./App.css";
-import "./index.css"
+import "./index.css";
 import { AppLayout } from "./layout/AppLayout";
-import { CalendarPicker } from "./components/CalendarPicker";
 import { useState } from "react";
-import { TabsSelector } from "./components/TabsSelector";
-import { AvailableSlots } from "./components/AvailableSlots";
+import { ReservaView } from "./components/ReservasView";
 import LoginPage from "./pages/LoginPage";
 
 function App() {
-  const [selectedDate, setSelectedDate] = useState<Date[]>([]);
+  const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [activeDate, setActiveDate] = useState<Date | null>(null);
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
   const handleDateSelect = (dates: Date[] | undefined) => {
-    setSelectedDate(dates ?? []);
+    setSelectedDates(dates ?? []);
     if (dates && dates.length > 0) {
       setActiveDate((prev) => (dates.includes(prev!) ? prev : dates[0]));
     } else {
@@ -24,22 +22,12 @@ function App() {
   return (
     <AppLayout>
       {loggedIn ? (
-        <div className="container mx-auto flex justify-around py-4 h-full">
-          <CalendarPicker
-            selectedDate={selectedDate}
-            onDateSelect={handleDateSelect}
-          />
-          <div className="flex flex-col">
-            {selectedDate.length > 0 && (
-              <TabsSelector
-                dates={selectedDate}
-                activeDate={activeDate}
-                onChange={setActiveDate}
-              />
-            )}
-            {activeDate && <AvailableSlots dates={activeDate} />}
-          </div>
-        </div>
+        <ReservaView
+          selectedDates={selectedDates}
+          activeDate={activeDate}
+          onDateSelect={handleDateSelect}
+          onActiveDateChange={setActiveDate}
+        />
       ) : (
         <LoginPage onLoginSuccess={() => setLoggedIn(true)} />
       )}

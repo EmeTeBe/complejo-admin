@@ -7,8 +7,17 @@ type Props = {
 export const AppLayout = ({ children }: Props) => {
   return (
     <div className="h-screen flex flex-col bg-gray-100 text-gray-800">
-      <header className="bg-secundario anton-regular drop-shadow-md h-12 flex justify-center items-center w-full">
-        <h1 className="text-2xl font-bold text-principal">MOLINO PADEL 360</h1>
+      <header className="bg-principal anton-regular drop-shadow-xl/20 h-16 flex justify-center px-7 items-center w-full">
+        <div className="flex items-center gap-2">
+          <img
+            src="/images/logo-blanco.png"
+            alt="Logo del complejo Molino Padel 360"
+            className="h-16 w-auto"
+          />
+        </div>
+        <h1 className="text-2xl font-bold text-gris-claro text-center flex-1">
+          MOLINO PADEL 360
+        </h1>
         {/* Aquí irá el selector de fecha */}
       </header>
       <main className="flex-1 overflow-auto items-center justify-center p-0">
