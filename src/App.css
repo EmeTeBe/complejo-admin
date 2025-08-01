@@ -15,6 +15,7 @@
   font-style: normal;
   letter-spacing: var(--tracking-widest);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Aumentar el tamaño de las celdas del calendario */

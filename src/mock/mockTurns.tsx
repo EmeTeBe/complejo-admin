@@ -13,7 +13,7 @@ export interface Cancha {
 
 function generarTurnos(): Turno[] {
   const slots: Turno[] = [];
-  let minutosTotales = 12 * 60; // 12:00 en minutos
+  let minutosTotales = 8 * 60; // 08:00 en minutos
 
   while (minutosTotales <= 24 * 60) {
     let hora = Math.floor(minutosTotales / 60);

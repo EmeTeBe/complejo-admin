@@ -52,7 +52,7 @@ const LoginPage = ({ onLoginSuccess }: LoginPageProps) => {
       <div className="w-1/2 flex items-center justify-center bg-gris-claro">
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-sm space-y-6 p-10 bg-white rounded-xl shadow-md"
+          className="w-full max-w-sm space-y-6 p-10 bg-white rounded-xl shadow-md/20"
         >
           <h2 className="text-2xl font-semibold text-center">Iniciar sesión</h2>
 
@@ -91,13 +91,8 @@ const LoginPage = ({ onLoginSuccess }: LoginPageProps) => {
         </form>
       </div>
       {/* Sección derecha: imagen e info */}
-      <aside className="w-1/2 bg-principal flex flex-col items-center justify-center p-10 text-center anton-regular">
-        <img
-          src="/tu-imagen.jpg"
-          alt="Complejo de canchas"
-          className="w-3/4 max-w-md mb-6 rounded-xl shadow"
-        />
-        <h2 className="text-3xl font-bold text-secundario">Molino Padel 360</h2>
+      <aside className="w-1/2 bg-[url('/images/aside-login.jpg')] bg-cover bg-center bg-no-repeat flex flex-col items-center justify-end p-10 text-center anton-regular">
+        <h2 className="text-3xl font-bold text-secundario ">Molino Padel 360</h2>
         <p className="text-secundario mt-4">Organizá turnos con facilidad</p>
       </aside>
     </div>

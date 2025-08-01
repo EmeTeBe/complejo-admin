@@ -17,7 +17,7 @@ export const TabsSelector = ({
           <button
             key={date.toISOString()}
             onClick={() => onChange(date)}
-            className={`px-4 py-2 rounded-xl border ${
+            className={`px-4 py-2 rounded-xl border cursor-pointer ${
               isActive
                 ? "bg-[#B61F1F] text-white border-[#B61F2F]"
                 : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
