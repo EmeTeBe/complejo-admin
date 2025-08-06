@@ -15,7 +15,7 @@ export const ReservaView = ({
   onActiveDateChange: (date: Date | null) => void;
 }) => {
   return (
-    <div className="container mx-auto flex justify-around py-4 h-full">
+    <div className="container mx-auto flex max-md:flex-col justify-around py-4 h-full max-md:items-center">
       <CalendarPicker
         selectedDates={selectedDates}
         onDateSelect={onDateSelect}

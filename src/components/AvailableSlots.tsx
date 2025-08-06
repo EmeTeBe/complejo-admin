@@ -79,7 +79,7 @@ export const AvailableSlots = ({ selectedDay }: AvailableSlotsProps) => {
   }, [modalData]);
 
   return (
-    <div className="mt-6 space-y-6">
+    <div className="mt-6 space-y-6 max-md:px-1">
       {loading && <p>Cargando...</p>}
       {error && <p className="text-principal">Error: {error}</p>}
       {mockCanchas.map((cancha) => (

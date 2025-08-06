@@ -3,12 +3,11 @@ import "./index.css";
 import { AppLayout } from "./layout/AppLayout";
 import { useState } from "react";
 import { ReservaView } from "./components/ReservasView";
-import LoginPage from "./pages/LoginPage";
+import { ReservasProvider } from "./context/ReservasProvider";
 
 function App() {
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [activeDate, setActiveDate] = useState<Date | null>(null);
-  const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
   const handleDateSelect = (dates: Date[] | undefined) => {
     setSelectedDates(dates ?? []);
@@ -20,18 +19,16 @@ function App() {
   };
 
   return (
-    <AppLayout>
-      {loggedIn ? (
+    <ReservasProvider>
+      <AppLayout>
         <ReservaView
           selectedDates={selectedDates}
           activeDate={activeDate}
           onDateSelect={handleDateSelect}
           onActiveDateChange={setActiveDate}
         />
-      ) : (
-        <LoginPage onLoginSuccess={() => setLoggedIn(true)} />
-      )}
-    </AppLayout>
+      </AppLayout>
+    </ReservasProvider>
   );
 }
 

@@ -6,6 +6,7 @@ type Props = {
   name: string;
   value: string;
   type?: string;
+  classname?: string;
   placeholder?: string;
   error?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -19,6 +20,7 @@ export const Input = ({
   value,
   type = "text",
   placeholder,
+  className,
   error,
   onChange,
   onClick,
@@ -36,8 +38,8 @@ export const Input = ({
           {label}
         </label>
       )}
-
-      <div className="relative mt-1">
+      {error && <p className="mt-1 text-sm text-principal">{error}</p>}
+      <div className="relative">
         <input
           name={name}
           id={name}
@@ -47,7 +49,7 @@ export const Input = ({
           placeholder={placeholder}
           required={required}
           className={twMerge(
-            "block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2",
+            `block w-full p-3.5 text-sm border-r border-l shadow-sm focus:outline-none focus:ring-2 + ${className}`,
             error
               ? "border-principal focus:ring-secundario"
               : "border-gray-300 focus:ring-secundario"
@@ -61,8 +63,6 @@ export const Input = ({
           </div>
         )}
       </div>
-
-      {error && <p className="mt-1 text-sm text-principal">{error}</p>}
     </div>
   );
 };

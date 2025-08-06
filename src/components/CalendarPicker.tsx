@@ -13,7 +13,7 @@ export const CalendarPicker = ({
   onDateSelect,
 }: CalendarPickerProps) => {
   return (
-    <div className="custom-calendar p-2 rounded-xl shadow-md bg-gris-claro w-1/2 h-10/12 mt-6">
+    <div className="custom-calendar p-2 rounded-xl shadow-md bg-gris-claro w-1/2 h-10/12 mt-6 max-md:m-0 max-md:w-fit max-md:h-fit">
       <DayPicker
         mode="multiple"
         min={1}
@@ -29,7 +29,7 @@ export const CalendarPicker = ({
         locale={es}
         footer={
           selectedDates && selectedDates.length > 0 ? (
-            <p className="text-md mt-2 text-gris-oscuro">
+            <p className="text-md max-md:text-xs mt-2 text-gris-oscuro max-xl:w-xs">
               {selectedDates.length === 1
                 ? "Día seleccionado: "
                 : "Días seleccionados: "}

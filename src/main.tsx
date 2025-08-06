@@ -2,12 +2,16 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
-import { ReservasProvider } from "./context/ReservasProvider.tsx";
+import { BrowserRouter, Route, Routes } from "react-router";
+import LoginPage from "./pages/LoginPage.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ReservasProvider>
-      <App />
-    </ReservasProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LoginPage/>} />
+        <Route path="/app" element={<App/>} />
+      </Routes>
+    </BrowserRouter>
   </StrictMode>
 );
