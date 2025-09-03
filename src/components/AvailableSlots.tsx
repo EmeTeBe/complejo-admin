@@ -1,40 +1,36 @@
 import { useEffect, useMemo, useState } from "react";
-import { mockCanchas } from "../mock/mockTurns";
-import type { Reserva } from "../types/ReservasTypes";
 import { useReservas } from "../hooks/useReservas";
 import { Modal } from "./Modal";
 import { Input } from "./Input";
+import type {
+  ReservaDTO,
+  ModalData,
+  ReservaRequestDTO,
+} from "../types/Reservas.types";
+import { useAuth } from "../hooks/useAuth";
 
 type AvailableSlotsProps = { selectedDay: Date };
 
 export const AvailableSlots = ({ selectedDay }: AvailableSlotsProps) => {
   const {
     reservas,
+    canchas,
     loading,
     error,
     actualizarReserva,
-    agregarReserva,
+    generarReserva,
     eliminarReserva,
   } = useReservas();
+
+  const { adminId, token } = useAuth();
+
   const [formData, setFormData] = useState({
     nombre: "",
     apellido: "",
     telefono: "",
   });
 
-  const [modalData, setModalData] = useState<
-    | {
-        open: boolean;
-        modo: "ver" | "crear" | "editar";
-        canchaId?: number;
-        fechaHoraInicio?: string;
-        reservaExistente?: Reserva;
-      }
-    | undefined
-  >(undefined);
-
-  // ✅ Fetch una sola vez al principio
-  // ✅ Manejo de errores en caso de que se cargue la carga
+  const [modalData, setModalData] = useState<ModalData | undefined>(undefined);
 
   const formatearFecha = (date: Date, hora: string) => {
     // convierte "13:30" a "2025-07-17T13:30:00"
@@ -46,11 +42,12 @@ export const AvailableSlots = ({ selectedDay }: AvailableSlotsProps) => {
   };
 
   const reservasPorFecha = useMemo(() => {
-    const mapa = new Map<string, Reserva>();
+    const mapa = new Map<string, ReservaDTO>();
 
     reservas.forEach((reserva) => {
       if (reserva.estado === "RESERVADA") {
-        mapa.set(`${reserva.canchaId}-${reserva.fechaHoraInicio}`, reserva);
+        const fechaNormalizada = reserva.fechaHoraInicio.slice(0, 16);
+        mapa.set(`${reserva.cancha.id}-${fechaNormalizada}`, reserva);
       }
     });
 
@@ -59,17 +56,27 @@ export const AvailableSlots = ({ selectedDay }: AvailableSlotsProps) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+
+    // filtramos para que sean solo numeros en el telefono
+    if (name === "telefono") {
+      const soloNumeros = value.replace(/\D/g, "");
+      setFormData((prev) => ({
+        ...prev,
+        [name]: soloNumeros,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   useEffect(() => {
     if (!modalData?.open) return;
 
     if (modalData.modo === "ver" && modalData.reservaExistente) {
-      const { nombre, apellido, telefono } = modalData.reservaExistente.cliente;
+      const { nombre, apellido, telefono } = modalData.reservaExistente;
       setFormData({ nombre, apellido, telefono });
     }
 
@@ -80,15 +87,18 @@ export const AvailableSlots = ({ selectedDay }: AvailableSlotsProps) => {
 
   return (
     <div className="mt-6 space-y-6 max-md:px-1">
-      {loading && <p>Cargando...</p>}
+      {loading && (
+        <p className="text-principal mx-auto text-center">Cargando...</p>
+      )}
       {error && <p className="text-principal">Error: {error}</p>}
-      {mockCanchas.map((cancha) => (
+      {canchas.map((cancha) => (
         <div key={cancha.id} className="p-4 bg-white rounded-xl shadow">
           <h3 className="font-semibold mb-2">{cancha.nombre}</h3>
           <div className="flex flex-wrap max-w-md gap-2">
             {cancha.turnos.map((turno) => {
               const fechaHora = formatearFecha(selectedDay, turno.horaInicio);
-              const key = `${cancha.id}-${fechaHora}`;
+              const fechaNormalizada = fechaHora.slice(0, 16);
+              const key = `${cancha.id}-${fechaNormalizada}`;
               const turnoReservado = reservasPorFecha.get(key);
               const reservado = !!turnoReservado;
 
@@ -105,16 +115,18 @@ export const AvailableSlots = ({ selectedDay }: AvailableSlotsProps) => {
                       setModalData({
                         open: true,
                         modo: "ver",
-                        canchaId: cancha.id,
                         fechaHoraInicio: turno.horaInicio,
                         reservaExistente: turnoReservado,
+                        canchaId: cancha.id,
+                        canchaNombre: cancha.nombre,
                       });
                     } else {
                       setModalData({
                         open: true,
                         modo: "crear",
-                        canchaId: cancha.id,
                         fechaHoraInicio: turno.horaInicio,
+                        canchaId: cancha.id,
+                        canchaNombre: cancha.nombre,
                       });
                     }
                   }}
@@ -154,84 +166,136 @@ export const AvailableSlots = ({ selectedDay }: AvailableSlotsProps) => {
             }
 
             if (modalData.modo === "crear") {
-              const nuevaReserva: Reserva = {
-                id: Date.now(), // simulamos ID único
+              const nuevaReserva: ReservaRequestDTO = {
                 canchaId: modalData.canchaId!,
                 fechaHoraInicio: formatearFecha(
                   selectedDay,
                   modalData.fechaHoraInicio!
                 ),
-                cliente: { ...formData },
-                estado: "RESERVADA",
+                administradorId: adminId!,
+                nombre: formData.nombre,
+                apellido: formData.apellido,
+                telefono: formData.telefono,
               };
-              agregarReserva(nuevaReserva);
-              setModalData(undefined);
+              generarReserva(nuevaReserva, token ? token : "").then(
+                (reservaNueva) => {
+                  if (reservaNueva) {
+                    setModalData(
+                      (prev) =>
+                        prev && {
+                          ...prev,
+                          modo: "ver",
+                          reservaExistente: reservaNueva,
+                        }
+                    );
+                  }
+                }
+              );
               return;
             }
 
             if (modalData.modo === "editar" && modalData.reservaExistente) {
-              const reservaActualizada: Reserva = {
-                ...modalData.reservaExistente,
-                cliente: { ...formData },
+              const reservaActualizada: ReservaRequestDTO = {
+                canchaId: modalData.reservaExistente.cancha.id,
+                fechaHoraInicio: formatearFecha(
+                  selectedDay,
+                  modalData.fechaHoraInicio!
+                ),
+                administradorId: adminId!,
+                nombre: formData.nombre,
+                apellido: formData.apellido,
+                telefono: formData.telefono,
               };
-              actualizarReserva(reservaActualizada.id, reservaActualizada);
-              setModalData(undefined);
+              actualizarReserva(
+                modalData.reservaExistente.id,
+                reservaActualizada,
+                token ? token : ""
+              ).then((reservaNuevaActualizada) => {
+                if (reservaNuevaActualizada) {
+                  setModalData(
+                    (prev) =>
+                      prev && {
+                        ...prev,
+                        modo: "ver",
+                        reservaExistente: reservaNuevaActualizada,
+                      }
+                  );
+                }
+              });
               return;
             }
           }}
           secondaryLabel={modalData.modo === "ver" ? "Eliminar" : "Cancelar"}
           onSecondary={() => {
             if (modalData?.modo === "ver" && modalData.reservaExistente) {
-              eliminarReserva(modalData.reservaExistente.id);
+              eliminarReserva(
+                modalData.reservaExistente.id,
+                token ? token : ""
+              );
             }
             setModalData(undefined);
           }}
         >
-          {modalData.reservaExistente && (
+          {(modalData.reservaExistente || modalData.modo === "crear") && (
             <div className="mb-4 space-y-1 text-sm text-gray-600">
               <p>
-                <strong>Cancha:</strong> Cancha {modalData.canchaId}
+                <strong>Cancha:</strong>{" "}
+                {modalData.reservaExistente
+                  ? modalData.reservaExistente.cancha.nombre
+                  : modalData.canchaNombre}
               </p>
               <p>
                 <strong>Fecha:</strong>{" "}
-                {modalData.reservaExistente.fechaHoraInicio.split("T")[0]}
+                {modalData.reservaExistente
+                  ? modalData.reservaExistente.fechaHoraInicio.split("T")[0]
+                  : selectedDay.toISOString().split("T")[0]}
               </p>
               <p>
                 <strong>Hora:</strong>{" "}
-                {modalData.reservaExistente.fechaHoraInicio
-                  .split("T")[1]
-                  .slice(0, 5)}
+                {modalData.reservaExistente
+                  ? modalData.reservaExistente.fechaHoraInicio
+                      .split("T")[1]
+                      .slice(0, 5)
+                  : modalData.fechaHoraInicio}
               </p>
             </div>
           )}
 
           <form className="space-y-4">
             <Input
+              type="text"
               id="nombre"
               label="Nombre"
               name="nombre"
               value={formData.nombre}
               onChange={handleChange}
+              required
               disabled={
                 modalData.modo !== "editar" && modalData.modo !== "crear"
               }
             />
             <Input
+              type="text"
               id="apellido"
               label="Apellido"
               name="apellido"
               value={formData.apellido}
               onChange={handleChange}
+              required
               disabled={
                 modalData.modo !== "editar" && modalData.modo !== "crear"
               }
             />
             <Input
+              type="tel"
               id="telefono"
               label="Teléfono"
               name="telefono"
               value={formData.telefono}
               onChange={handleChange}
+              minLength={8}
+              pattern="[0-9]{8}"
+              required
               disabled={
                 modalData.modo !== "editar" && modalData.modo !== "crear"
               }

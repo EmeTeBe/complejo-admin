@@ -1,16 +1,15 @@
 import type { ReactNode } from "react";
-import { useNavigate } from "react-router";
+import { useAuth } from "../hooks/useAuth";
 
 type Props = {
   children: ReactNode;
 };
 
 export const AppLayout = ({ children }: Props) => {
-  const navigate = useNavigate();
+  const auth = useAuth();
 
   const handlelogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    navigate("/", { replace: true });
+    auth.logOut();
   };
 
   return (

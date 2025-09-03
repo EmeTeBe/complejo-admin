@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
-import { login } from "../services/authService";
 import { Input } from "../components/Input";
 import { EyeOpenIcon, EyeClosedIcon } from "../components/Icons";
-import { useNavigate } from "react-router";
+import { Link } from "react-router";
+import { useAuth } from "../hooks/useAuth";
 
 const LoginPage = () => {
-  const [form, setForm] = useState({ username: "", password: "" });
+  const [form, setForm] = useState({ usuario: "", contraseña: "" });
   const [error, setError] = useState<string | null>(null);
   const [showPw, setShowPw] = useState(false);
   const [isValid, setIsValid] = useState(false);
-  const navigate = useNavigate();
+  const auth = useAuth();
 
   // Se fija si el form es válido cada vez que cambia
   useEffect(() => {
     const valid =
-      form.username.trim() !== "" && form.password.trim().length >= 6;
+      form.usuario.trim() !== "" && form.contraseña.trim().length >= 6;
     setIsValid(valid);
   }, [form]);
 
@@ -24,14 +24,11 @@ const LoginPage = () => {
     setError(null); // limpia posible error
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isValid) return;
-
-    const success = await login(form.username, form.password);
-
-    if (success) {
-      navigate("/app");
+    if (isValid) {
+      auth.login(form);
+      return;
     } else {
       setError("Credenciales incorrectas");
     }
@@ -42,12 +39,9 @@ const LoginPage = () => {
       <div className="flex-1 flex flex-col items-center justify-center bg-gris-claro">
         <div className="w-88 bg-white rounded-lg shadow-md/20">
           <div className="text-center pt-1.5 pb-1 min-h-24 border-b border-b-gray-200">
-            {/* En pantallas md o más grandes → muestra el título */}
             <h1 className="text-2xl leading-21 font-semibold hidden md:block">
               INICIAR SESIÓN
             </h1>
-
-            {/* En pantallas menores a md → muestra el logo */}
             <img
               src="/images/logo-negro.png"
               alt="Logo Molino Padel 360"
@@ -59,27 +53,39 @@ const LoginPage = () => {
               {error}
             </p>
           )}
+          {auth.loading && (
+            <p className="text-gris-claro bg-gris-oscuro/30 text-sm font-semibold text-center h-8 leading-8">
+              Cargando...
+            </p>
+          )}
           <form onSubmit={handleSubmit} className="w-full p-10 ">
             <Input
-              id="username"
-              name="username"
+              id="usuario"
+              name="usuario"
               className="border-t rounded-t-lg cursor-text"
               placeholder="USUARIO"
               type="text"
-              value={form.username}
+              value={form.usuario}
               onChange={handleChange}
             />
 
             <Input
-              id="password"
-              name="password"
+              id="contraseña"
+              name="contraseña"
               className="border-b rounded-b-lg cursor-text"
               placeholder="CONTRASEÑA"
               type={showPw ? "text" : "password"}
-              value={form.password}
+              value={form.contraseña}
               onChange={handleChange}
-              onClick={() => setShowPw((prev) => !prev)}
-              iconRight={showPw ? <EyeOpenIcon /> : <EyeClosedIcon />}
+              iconRight={
+                <button
+                  type="button"
+                  onClick={() => setShowPw((prev) => !prev)}
+                  className="cursor-pointer"
+                >
+                  {showPw ? <EyeOpenIcon /> : <EyeClosedIcon />}
+                </button>
+              }
             />
 
             <button
@@ -96,6 +102,15 @@ const LoginPage = () => {
             </button>
           </form>
         </div>
+        <p className="text-sm text-gray-500 mt-4">
+          ¿No tenés cuenta?{" "}
+          <Link
+            to="/signup"
+            className="text-principal hover:text-red-700 font-semibold"
+          >
+            Registrate
+          </Link>
+        </p>
       </div>
       {/* Sección derecha: imagen e info */}
       <aside className="flex-1 bg-[url('/images/aside-login.jpg')] bg-cover bg-center bg-no-repeat flex flex-col items-center justify-end p-2 text-center anton-regular max-md:hidden">
