@@ -1,74 +1,113 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { ReservasContext } from "./ReservasContext";
-import type { Reserva, ReservasContextType } from "../types/ReservasTypes";
-import { fetchReservas } from "../services/fetchReservas";
+import type {
+  ReservaDTO,
+  Canchas,
+  ReservaRequestDTO,
+} from "../types/Reservas.types";
+import {
+  crearReserva,
+  obtenerReservas,
+  actualizarReserva as actualizarReservaService,
+  eliminarReserva as eliminarReservaService,
+} from "../services/fetchReservas";
+import { obtenerCanchas } from "../services/canchaService";
 
-type Props = {
-  children: React.ReactNode;
-};
-
-export const ReservasProvider = ({ children }: Props) => {
-  const [reservas, setReservas] = useState<Reserva[]>([]);
-  const [loading, setLoading] = useState(true);
+export function ReservasProvider({ children }: { children: ReactNode }) {
+  const [reservas, setReservas] = useState<ReservaDTO[]>([]);
+  const [canchas, setCanchas] = useState<Canchas[]>([]);
   const [error, setError] = useState<string | null>(null);
-  // ✅ Cargar reservas al iniciar el contexto
-  // ✅ Manejo de errores en caso de que se cargue la carga
-  // ✅ Usar useMemo para optimizar el cálculo de reservas por fecha
+  const [loading, setLoading] = useState(true);
 
-  // Cargar reservas al iniciar el contexto
+  async function cargarReservas() {
+    try {
+      setLoading(true);
+      const data = await obtenerReservas();
+      setReservas(data.data);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      setError("No se pudieron cargar las reservas");
+    }
+  }
+
+  async function cargarCanchas() {
+    try {
+      setLoading(true);
+      const data = await obtenerCanchas();
+      setCanchas(data);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      setError("No se pudieron cargar las canchas");
+    }
+  }
+
+  async function generarReserva(dto: ReservaRequestDTO, token: string) {
+    setError(null);
+    try {
+      const data = await crearReserva(dto, token);
+      setReservas((prev) => [...prev, data.data]);
+      return data.data;
+    } catch (error) {
+      console.error(error);
+      setError("No se pudo crear la reserva");
+      return null;
+    }
+  }
+
+  async function actualizarReserva(
+    id: number,
+    dto: ReservaRequestDTO,
+    token: string
+  ) {
+    setError(null);
+    try {
+      const data = await actualizarReservaService(id, dto, token);
+
+      setReservas((prev) =>
+        prev.map((reserva) => (reserva.id === id ? data.data : reserva))
+      );
+      return data.data;
+    } catch (error) {
+      console.error(error);
+      setError("No se pudo actualizar la reserva");
+      return null;
+    }
+  }
+
+  async function eliminarReserva(id: number, token: string) {
+    setError(null);
+    try {
+      const data = await eliminarReservaService(id, token);
+      setReservas((prev) => prev.filter((reserva) => reserva.id !== id));
+      console.log("Reserva eliminada:", data);
+    } catch (error) {
+      console.error(error);
+      setError("No se pudo eliminar la reserva");
+    }
+  }
+
   useEffect(() => {
-    const loadReservas = async () => {
-      try {
-        const data = await fetchReservas();
-        setReservas(data);
-      } catch (error) {
-        setError("Error al cargar reservas: " + error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadReservas();
+    cargarReservas();
+    cargarCanchas();
   }, []);
 
-  const reservasPorFecha = useMemo(() => {
-    const map = new Map<string, Reserva[]>();
-    reservas.forEach((reserva) => {
-      const fecha = reserva.fechaHoraInicio.split("T")[0];
-      if (!map.has(fecha)) {
-        map.set(fecha, []);
-      }
-      map.get(fecha)!.push(reserva);
-    });
-    return map;
-  }, [reservas]);
-
-  const agregarReserva = (reserva: Reserva) => {
-    setReservas((prev) => [...prev, reserva]);
-  };
-
-  const eliminarReserva = (id: number) => {
-    setReservas((prev) => prev.filter((reserva) => reserva.id !== id));
-  };
-
-  const actualizarReserva = (id: number, reserva: Reserva) => {
-    setReservas((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, ...reserva } : r))
-    );
-  };
-
-  const value: ReservasContextType = {
-    reservas,
-    reservasPorFecha,
-    agregarReserva,
-    actualizarReserva,
-    eliminarReserva,
-    loading,
-    error,
-  };
-
   return (
-    <ReservasContext.Provider value={value}>
+    <ReservasContext.Provider
+      value={{
+        reservas,
+        canchas,
+        error,
+        loading,
+        cargarReservas,
+        cargarCanchas,
+        generarReserva,
+        actualizarReserva,
+        eliminarReserva,
+      }}
+    >
       {children}
     </ReservasContext.Provider>
   );
-};
+}

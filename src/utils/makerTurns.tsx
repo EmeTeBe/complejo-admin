@@ -1,17 +1,8 @@
-export type Turno = {
-  horaInicio: string;
-  reservado: boolean;
-  nombre?: string;
-  telefono?: string;
-};
+import type{ Turno } from "../types/Reservas.types";
 
-export interface Cancha {
-  id: number;
-  nombre: string;
-  turnos: Turno[];
-}
 
-function generarTurnos(): Turno[] {
+
+export function generarTurnos(): Turno[] {
   const slots: Turno[] = [];
   let minutosTotales = 8 * 60; // 08:00 en minutos
 
@@ -32,7 +23,8 @@ function generarTurnos(): Turno[] {
   return slots;
 }
 
-export const mockCanchas: Cancha[] = [
-  { id: 1, nombre: "Cancha 1", turnos: generarTurnos() },
-  { id: 2, nombre: "Cancha 2", turnos: generarTurnos() },
-];
+//export const mockCanchas: Canchas[] = [
+//  { id: 1, nombre: "Cancha 1", turnos: generarTurnos() },
+//  { id: 3, nombre: "Cancha 2", turnos: generarTurnos() },
+//];
+

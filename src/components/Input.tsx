@@ -10,7 +10,10 @@ type Props = {
   placeholder?: string;
   error?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onClick?: () => void;
   required?: boolean;
+  minLength?: number;
+  pattern?: string;
   iconRight?: React.ReactNode;
 } & InputHTMLAttributes<HTMLInputElement>;
 
@@ -24,7 +27,9 @@ export const Input = ({
   error,
   onChange,
   onClick,
-  required = false,
+  required,
+  minLength,
+  pattern,
   iconRight,
   ...props
 }: Props) => {
@@ -38,7 +43,6 @@ export const Input = ({
           {label}
         </label>
       )}
-      {error && <p className="mt-1 text-sm text-principal">{error}</p>}
       <div className="relative">
         <input
           name={name}
@@ -48,6 +52,9 @@ export const Input = ({
           onChange={onChange}
           placeholder={placeholder}
           required={required}
+          minLength={minLength}
+          pattern={pattern}
+          inputMode={type === "tel" ? "numeric" : "text"}
           className={twMerge(
             `block w-full p-3.5 text-sm border-r border-l shadow-sm focus:outline-none focus:ring-2 + ${className}`,
             error
@@ -58,8 +65,11 @@ export const Input = ({
         />
 
         {iconRight && (
-          <div className="absolute inset-y-0 right-3 flex items-center cursor-pointer">
-            <span onClick={onClick}>{iconRight}</span>
+          <div
+            className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+            onClick={onClick}
+          >
+            {iconRight}
           </div>
         )}
       </div>

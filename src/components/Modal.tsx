@@ -57,6 +57,7 @@ export function Modal({
           )}
           {primaryLabel && (
             <button
+              type="submit"
               onClick={onPrimary}
               className="px-4 py-2 rounded-lg bg-secundario text-gris-oscuro border cursor-pointer"
             >
